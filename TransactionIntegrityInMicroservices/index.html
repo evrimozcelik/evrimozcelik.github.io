@@ -33,11 +33,11 @@
 				</section>
 				<section>
 					<h2>ACID Principles</h2>
-					<ul class="fragment">
-						<li><strong>Atomicity: </strong>All or none; rollback if any transaction fails</li>
-						<li><strong>Consistency: </strong>Data should always be consistent</li>
-						<li><strong>Isolation: </strong>Transactions should run isolated</li>
-						<li><strong>Durability: </strong>Data should reside safely after commit</li>
+					<ul>
+						<li class="fragment fade-in">Atomicity: All or none; rollback if any transaction fails</li>
+						<li class="fragment fade-in">Consistency: Data should always be consistent</li>
+						<li class="fragment fade-in">Isolation: Transactions should run isolated</li>
+						<li class="fragment fade-in">Durability: Data should reside safely after commit</li>
 					</ul>
 				</section>
 				<section>
@@ -52,9 +52,9 @@
 						</section>
 						<section>
 							<ul>
-								<li class="fragment fade-in-then-semi-out"><strong>Consistency: </strong>A guarantee that every node in a distributed cluster returns the same, most recent, successful write</li>
-								<li class="fragment fade-in-then-semi-out"><strong>Availability: </strong>Every non-failing node returns a response for all read and write requests in a reasonable amount of time</li>
-								<li class="fragment fade-in-then-semi-out"><strong>Partition Tolerant: </strong>The system continues to function and upholds its consistency guarantees in spite of network partitions (network split due to the failure of network devices)</li>
+								<li class="fragment fade-in-then-semi-out">Consistency: A guarantee that every node in a distributed cluster returns the same, most recent, successful write</li>
+								<li class="fragment fade-in-then-semi-out">Availability: Every non-failing node returns a response for all read and write requests in a reasonable amount of time</li>
+								<li class="fragment fade-in-then-semi-out">Partition Tolerant: The system continues to function and upholds its consistency guarantees in spite of network partitions (network split due to the failure of network devices)</li>
 							</ul>
 						</section>
 						<section>
@@ -116,8 +116,6 @@
 						</ul>
 					</section>
 
-
-
 				</section>
 
 			</div>
@@ -135,11 +133,14 @@
 					{ src: 'plugin/markdown/markdown.js' },
 					{ src: 'plugin/notes/notes.js', async: true },
 					{ src: 'plugin/highlight/highlight.js', async: true }
-				]
+				],
+				hash: true,
+				slideNumber: true,
+				progress: true
 			});
 
 			// Shows the slide number using default formatting
-			Reveal.configure({ slideNumber: true });
+			//Reveal.configure({ slideNumber: true });
 		</script>
 	</body>
 </html>
