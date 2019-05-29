@@ -71,13 +71,14 @@
 				</section>
 
 				<section>
-					<section>
+						<section>
 							<h2>Transaction Management in Microservices</h2>
+						</section>
+					<section>
 							<ul>
 								<li class="fragment fade-in-then-semi-out">Avoiding transactions across Microservices </li>
 								<li class="fragment fade-in-then-semi-out">Two Phase Commit (2PC)</li>
-								<li class="fragment fade-in-then-semi-out">Saga Pattern - Events/Choreography</li>
-								<li class="fragment fade-in-then-semi-out">Saga Pattern - Command/Orchestration</li>
+								<li class="fragment fade-in-then-semi-out">Saga Pattern</li>
 							</ul>
 					</section>
 
@@ -109,14 +110,115 @@
 
 					<section>
 						<h2>Two-Phase Commit (2PC)</h2>
-						<p>Disadvantages:</p>
+
+						<h3>Advantages</h3>
+						<p class="fragment highlight-blue">Easy to understand, centrally managed</p>
+						<p class="fragment highlight-blue">Immediate response to end user</p>
+						
+						<h3>Drawbacks</h3>
+						<p class="fragment highlight-red">2pc is synchronous (blocking)</p>
+						<p class="fragment highlight-red">Locks the object that will be changed before the transaction completes</p>
+						
+					</section>
+
+				</section>
+
+				<section>
+
+					<section>
+						<h2>Saga Pattern</h2>
+					</section>
+					
+					<section>
+							<p>First introduced in 1987 in an <a href="https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf">academic paper</a></p>
+							<img class="stretch" src="images/saga-paper.png" />
+					</section>
+
+					<section>
+							<p>A saga is a sequence of local transactions.</p> 
+							<p class="fragment fade-in">Each local transaction updates the database and publishes a message or event to trigger the next local transaction in the saga. </p> 
+							<p class="fragment fade-in">If a local transaction fails because it violates a business rule then the saga executes a series of compensating transactions that undo the changes that were made by the preceding local transactions.</p>
+					</section>
+
+					<section>
+							<h3>Methods</h3>
+							<ul>
+								<li class="fragment fade-in">Events/Choreography</li>
+								<li class="fragment fade-in">Command/Orchestration</li>
+							</ul>
+					</section>
+
+					<section>
+							<h3>Events/Choreography</h3>
+							<p>Each local transaction publishes domain events that trigger local transactions in other services</p>
+							<img class="stretch" style="background: white;" src="images/saga-choreography.png" />
+					</section>
+
+					<section>
+							<h3>Command/Orchestration</h3>
+							<p>An orchestrator (object) tells the participants what local transactions to execute</p>
+							<img class="stretch" style="background: white;" src="images/saga-orchestration.png" />
+					</section>
+
+					<section>
+							<p>Events can be emitted over Message Queues or Databases</p>
+							<p>Routing capabilities of the Message Queues can be used to put the messages to the inbox queues of the related services</p>
+					</section>
+
+
+					<section>
+							<h3>Drawbacks</h3>
+							<ul>
+								<li class="fragment fade-in">Difficult to debug</li>
+								<li class="fragment fade-in">Event messages could become difficult to maintain</li>
+								<li class="fragment fade-in">Does not have read isolation</li>
+								<li class="fragment fade-in">Additional work to atomically update the database and emit an event</li>
+							</ul>
+					</section>
+
+				</section>
+
+				<section>
+					<h2>Eventual Consistency</h2>
+					<p class="fragment fade-in">Mechanisms of ensuring that the system would be eventually consistent at some point in the future</p>
+					<p class="fragment fade-in">By carefully considering all possible failure scenarios, we can ensure that our system would satisfy the conditions of eventual consistency</p>
+					<p class="fragment fade-in">For example if one of the messages got lost, or some other failure happened, the Order microservice finds all non-completed orders by scheduled batch-processing and processes them</p>
+				</section>
+				
+				<section>
+					<section>
+						<h2>Maintaining Atomicity while Updating State and Publishing Event</h2>
+					</section>
+
+					<section>
+						<p>2PC is not an option because DB and MQ are different systems</p>
 						<ul>
-							<li class="fragment fade-in-then-semi-out">2pc is synchronous (blocking)</li>
-							<li class="fragment fade-in-then-semi-out">Locks the object that will be changed before the transaction completes</li>
+							<li class="fragment fade-in">Application Events (ebay) -> application inserts an event into an event table and another process polls that event table and publishes them</li>
+							<li class="fragment fade-in">Database triggers the event</li>
+							<li class="fragment fade-in">Transaction log tailing (linkedin) -> tails database commit logs and publishes events based on that</li>
+							<li class="fragment fade-in">Event sourcing</li>
 						</ul>
 					</section>
 
 				</section>
+
+
+				
+
+				
+
+				<section>
+						<h2>References</h2>
+						<p>
+							<a href="https://microservices.io/patterns/data/saga.html">https://microservices.io/patterns/data/saga.html</a>
+						</p>
+						<p>
+							<a href="https://youtu.be/7kX3fs0pWwc">Developing Microservices with aggregates</a>
+						</p>
+						<p>
+							<a href="https://youtu.be/0UTOLRTwOX0">Distributed Sagas: A Protocol for Coordinating Microservices</a>
+						</p>
+					</section>
 
 			</div>
 		</div>
