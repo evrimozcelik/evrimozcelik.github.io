@@ -25,8 +25,101 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section>
+					<h1>Transaction Integrity in Microservices</h1>
+					<p>
+						<small>Created by <a href="https://github.com/evrimozcelik">Evrim Özçelik</a></small>
+					</p>
+				</section>
+				<section>
+					<h2>ACID Principles</h2>
+					<ul class="fragment">
+						<li><strong>Atomicity: </strong>All or none; rollback if any transaction fails</li>
+						<li><strong>Consistency: </strong>Data should always be consistent</li>
+						<li><strong>Isolation: </strong>Transactions should run isolated</li>
+						<li><strong>Durability: </strong>Data should reside safely after commit</li>
+					</ul>
+				</section>
+				<section>
+						<section>
+								<h2>CAP Theorem</h2>
+								<p>It is a concept that a distributed database system can only have 2 of the following</p> 
+								<ul>
+									<li class="fragment fade-in">Consistency</li>
+									<li class="fragment fade-in">Availability</li>
+									<li class="fragment fade-in">Partition Tolerant</li>
+								</ul>
+						</section>
+						<section>
+							<ul>
+								<li class="fragment fade-in-then-semi-out"><strong>Consistency: </strong>A guarantee that every node in a distributed cluster returns the same, most recent, successful write</li>
+								<li class="fragment fade-in-then-semi-out"><strong>Availability: </strong>Every non-failing node returns a response for all read and write requests in a reasonable amount of time</li>
+								<li class="fragment fade-in-then-semi-out"><strong>Partition Tolerant: </strong>The system continues to function and upholds its consistency guarantees in spite of network partitions (network split due to the failure of network devices)</li>
+							</ul>
+						</section>
+						<section>
+							<p>In any networked shared-data systems partition tolerance is a must. Network partitions and dropped messages are a fact of life and must be handled appropriately.</p>
+								
+							<p class="fragment fade-in">The correct way to think about CAP is that in case of a network partition (a rare occurrence) one needs to choose between availability and consistency.</p>
+						</section>
+				</section>
+				
+				<section>
+					<h2>Transaction Management in Monoliths</h2>
+					<p class="fragment fade-in-then-semi-out">Many platforms provide transaction APIs (e.g. Asp.Net Core TransactionScope) which manage involved transactions with begin, commit, rollback methods. </p>
+					<p class="fragment fade-in-then-semi-out">Database transaction management capabilities can also be used to execute multiple commands on the same database.</p>
+				</section>
+
+				<section>
+					<section>
+							<h2>Transaction Management in Microservices</h2>
+							<ul>
+								<li class="fragment fade-in-then-semi-out">Avoiding transactions across Microservices </li>
+								<li class="fragment fade-in-then-semi-out">Two Phase Commit (2PC)</li>
+								<li class="fragment fade-in-then-semi-out">Saga Pattern - Events/Choreography</li>
+								<li class="fragment fade-in-then-semi-out">Saga Pattern - Command/Orchestration</li>
+							</ul>
+					</section>
+
+					<section>
+						<h2>Avoiding transactions across Microservices</h2>
+						<p class="fragment fade-in-then-semi-out">During design time, eliminate transactional dependencies to other services as much as possible.</p>
+						<p class="fragment fade-in-then-semi-out">For example in an Order scenario, user’s last order time can be retrieved from Order micro service with an extra call instead adding another field to the User entity and update the value after user submits an order. </p>
+					</section>
+
+					<section>
+						<h2>Two-Phase Commit (2PC)</h2>
+						<ul>
+							<li class="fragment fade-in-then-semi-out">Defined in 1991</li>
+							<li class="fragment fade-in-then-semi-out">2 phases; voting, commit</li>
+							<li class="fragment fade-in-then-semi-out">Voting phase, is where all the concerned resources are asked to “prepare”</li>
+							<li class="fragment fade-in-then-semi-out">Commit phase, confirms the new state of all the concerned resources</li>
+							<li class="fragment fade-in-then-semi-out">In the event of an error, the protocol rolls back and all the resources reach the previous state.</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Two-Phase Commit (2PC)</h2>
+						<p>The following standards can be used:</p>
+						<ul>
+							<li class="fragment fade-in-then-semi-out">XA Standard: All JTA-compliant application servers support this standard</li>
+							<li class="fragment fade-in-then-semi-out">REST-AT Standard (draft): still under development by RedHat, application server acts as a transaction coordinator with a specific REST API</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Two-Phase Commit (2PC)</h2>
+						<p>Disadvantages:</p>
+						<ul>
+							<li class="fragment fade-in-then-semi-out">2pc is synchronous (blocking)</li>
+							<li class="fragment fade-in-then-semi-out">Locks the object that will be changed before the transaction completes</li>
+						</ul>
+					</section>
+
+
+
+				</section>
+
 			</div>
 		</div>
 
@@ -44,6 +137,9 @@
 					{ src: 'plugin/highlight/highlight.js', async: true }
 				]
 			});
+
+			// Shows the slide number using default formatting
+			Reveal.configure({ slideNumber: true });
 		</script>
 	</body>
 </html>
