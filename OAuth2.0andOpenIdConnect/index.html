@@ -1,0 +1,413 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/monokai.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>OAuth2.0 and Open ID Connect</h1>
+					<p>
+						<small>Prepared by <a href="https://github.com/evrimozcelik">Evrim Özçelik</a></small>
+					</p>
+				</section>
+
+				<section>
+
+					<section>
+						<h2>The OAuth 2.0 Authorization Framework</h2>
+					</section>
+
+					<section>
+						<h3>Definition</h3>
+						<p>Enables a third-party application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf.</p>
+						<p>OAuth 2.0 supersedes the work done on the original OAuth protocol created in 2006.</p>
+						<p>Specs are defined in <a href="https://tools.ietf.org/html/rfc6749">RFC6749</a></p>
+					</section>
+
+					<section>
+						<h3>Issues</h3>
+						<ul>
+							<li>3rd-party apps are required to store the resource owner's credentials for future use</li>
+							<li>Servers are required to support password authentication</li>
+							<li>3rd-party apps gain overly broad access (no duration or limiting subset of resources)</li>
+							<li>Resource owners cannot revoke access without revoking access to all 3rd parties (changing password)</li>
+							<li>Compromise of any 3rd-party app results in compromise of the end-user's password and all of the data</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Terminology Part-1</h3>
+						<ul>
+							<li>Resource Owner: end user</li>
+							<li>Resource server: provides services and data</li>
+							<li>Client: makes the service request</li>
+							<li>Authorization server: issues access token</li>
+							<li>Access token: credentials to access to the resource server</li>
+							<li>Scope: limits a client's access to a user's account. </li>
+						</ul>
+					</section>
+					<section>
+						<h3>OAuth</h3>
+						<p>In OAuth, the client requests access to resources controlled by the resource owner and hosted by the resource server, and is issued a different set of credentials than those of the resource owner</p>
+					</section>
+					<section>
+						<h3>Access Token</h3>
+						<ul>
+							<li>A string denoting a specific scope, lifetime, and other access attributes</li>
+							<li>Instead of using the resource owner's credentials to access protected resources, the client obtains an access token</li>
+							<li>Access tokens are issued to third-party clients by an authorization server with the approval of the resource owner.</li>
+							<li>Short lived</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Abstract Protocol Flow</h3>
+						<img class="stretch" src="images/oauth2-abstract-flow.png" />
+					</section>
+
+					<section>
+						<h3>Authorization Grant</h3>
+						<p>It is a credential representing the resource owner's authorization used by the client to obtain an access token.</p>
+						
+						<h3>Grant types</h3>
+						<ul>
+							<li>Authorization code</li>
+							<li>Implicit</li>
+							<li>Resource owner password credentials</li>
+							<li>Client credentials</li>
+						</ul>
+					</section>
+
+					<section>
+							<table>
+								<thead>
+									<tr>
+										<th>Term</th>
+										<th>Description</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Authorization Code</td>
+										<td>A string returned by authorization endpoint whill will be used to get access token from token endpoint</td>
+									</tr>
+									<tr>
+										<td>Access Token</td>
+										<td>A string (or JWT) which denotes who has authorized which permissions (scopes) to which application</td>
+									</tr>
+									<tr>
+										<td>ID Token</td>
+										<td>JWT that contains information about the logged in user</td>
+									</tr>
+									<tr>
+										<td>Refresh Token</td>
+										<td>Used to get new access tokens</td>
+									</tr>
+								</tbody>
+							</table>
+			
+					</section>
+
+					<section>
+						<h3>Endpoints</h3>
+						<ul>
+							<li>Authorization endpoint: interacts with the resource owner and gets the authorization to access the protected resource</li>
+							<li>Token endpoint: used by the application in order to get an Access Token or a Refresh Token</li>
+							<li>Introspection endpoint: used by the resource server in order to verify an Access Token</li>
+						</ul>
+					</section>
+
+				</section>
+
+				<section>
+					
+					<section>
+						<h3>Authorization Code Grant Flow</h3>
+						<ol>
+							<li>Application redirects user to OAuth Authorization endpoint with response_type=code</li>
+							<li>OAuth server authenticates user</li>
+							<li>User approves app's authorization request</li>
+							<li>OAuth server redirects the user back to the app with an authorization code in the query string</li>
+							<li>App gets an access token from OAuth Token endpoint by using the authorization code</li>
+							<li>App accesses to resource server with access token</li>
+						</ol>
+					</section>
+
+					<section>
+						<img class="stretch" src="images/auth-code-grant-flow.png" />
+						<a href="https://medium.com/@darutk/diagrams-and-movies-of-all-the-oauth-2-0-flows-194f3c3ade85">https://medium.com/@darutk/diagrams-and-movies-of-all-the-oauth-2-0-flows-194f3c3ade85</a>
+					</section>
+
+					<section>
+						<h3>Authorization Code Grant - Step1</h3>
+						<p>Application redirects user to OAuth Authorization endpoint</p>
+						<pre>
+							<code class="hljs" data-trim>
+								https://sso-server/auth?
+									response_type=code
+									&client_id={myclient}
+									&redirect_uri=https://mydomain.com/callback
+									&scope={scopes} 
+									&state={stateid} 
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h3>Authorization Code Grant - Step4</h3>
+						<p>Auth server redirects the user back to the app with an authorization code in the query string</p>
+						<pre>
+							<code class="hljs" data-trim>
+								HTTP/1.1 302 Found
+								Location: https://mydomain.com/callback
+									?code={authorization-code}
+									&state={stateid}
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h3>Authorization Code Grant - Step5</h3>
+						<p>App gets an access token from OAuth by posting the authorization code</p>
+						<pre>
+							<code class="hljs" data-trim>
+								HTTP/1.1 200 OK
+								Content-Type: application/json
+								Cache-Control: no-store
+								Pragma: no-cache
+
+								{
+								"access_token":"{access_token}",
+								"token_type":"bearer",
+								"expires_in":3600,
+								"refresh_token":"{refresh_token}",
+								"scope":"{scopes}"
+								}
+
+							</code>
+						</pre>
+					</section>
+
+				</section>
+
+				<section>
+					
+					<section>
+						<h3>Implicit Grant Flow</h3>
+						<ol>
+							<li>Application redirects user to OAuth Authorization endpoint with response_type=token</li>
+							<li>OAuth server authenticates user</li>
+							<li>User approves app's authorization request</li>
+							<li>OAuth server redirects the user back to the app with an access token in the query string</li>
+							<li>App accesses to resource server with access token</li>
+						</ol>
+					</section>
+
+					<section>
+						<h3>Implicit Grant Flow</h3>
+						<img class="stretch" src="images/implicit-grant-flow.png" />
+						<p>Note that access token is returned by Authorization endpoint</p>
+					</section>
+
+					<section>
+						<h3>Implicit Grant - Step1</h3>
+						<p>Application redirects user to OAuth Authorization endpoint</p>
+						<pre>
+							<code class="hljs" data-trim>
+								https://sso-server/auth?
+									response_type=token
+									&client_id={myclient}
+									&redirect_uri=https://mydomain.com/callback
+									&scope={scopes} 
+									&state={stateid} 
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h3>Implicit Grant - Step4</h3>
+						<p>Auth server redirects the user back to the app with an access token in the query string</p>
+						<pre>
+							<code class="hljs" data-trim>
+								HTTP/1.1 302 Found
+								Location: https://mydomain.com/callback
+									?access_token={access_token}
+									&token_type={token_type}
+									&state={stateid}
+							</code>
+						</pre>
+					</section>
+
+				</section>
+
+				<section>
+
+					<section>
+						<h3>Password Credentials Grant Flow</h3>
+						<ol>
+							<li>Application gets userid and password from user and sends them to OAuth Token endpoint with grant_type=password</li>
+							<li>OAuth server authenticates user and returns back access token</li>
+							<li>App accesses to resource server with access token</li>
+						</ol>
+	
+					</section>
+	
+					<section>
+						<h3>Password Credentials Grant Flow</h3>
+						<img class="stretch" src="images/password-credentials-grant-flow.png" />
+					</section>
+	
+					<section>
+						<h3>Password Credentials Grant - Step1</h3>
+						<p>Application sends user password credentials to OAuth server</p>
+						<pre>
+							<code class="hljs" data-trim>
+								POST {Token Endpoint} HTTP/1.1
+								Host: {Authorization Server}
+								Content-Type: application/x-www-form-urlecoded
+	
+								grant_type=password
+								&username={username}
+								&password={password}
+								&scope={scopes}
+							</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Password Credentials Grant - Step2</h3>
+						<p>OAuth server authenticates user and returns back access token</p>
+						<pre>
+							<code class="hljs" data-trim>
+								HTTP/1.1 200 OK
+								Content-Type: application/json
+								Cache-Control: no-store
+								Pragma: no-cache
+	
+								{
+								"access_token":"{access_token}",
+								"token_type":"bearer",
+								"expires_in":3600,
+								"refresh_token":"{refresh_token}",
+								"scope":"{scopes}"
+								}
+							</code>
+						</pre>
+					</section>
+
+				</section>
+
+				<section>
+
+					<section>
+						<h3>Client Credentials Grant Flow</h3>
+						<ol>
+							<li>Application sends client ID and secret to OAuth Token endpoint with grant_type=client_credentials</li>
+							<li>OAuth server authenticates client and returns back access token</li>
+							<li>App accesses to resource server with access token</li>
+						</ol>
+	
+					</section>
+	
+					<section>
+						<h3>Client Credentials Grant Flow</h3>
+						<img class="stretch" src="images/client-credentials-grant-flow.png" />
+					</section>
+	
+					<section>
+						<h3>Client Credentials Grant - Step1</h3>
+						<p>Application sends client ID and secret to OAuth server</p>
+						<pre>
+							<code class="hljs" data-trim>
+								POST {Token Endpoint} HTTP/1.1
+								Host: {Authorization Server}
+								Content-Type: application/x-www-form-urlecoded
+	
+								grant_type=client_credentials
+								&client_id={client_id}
+								&client_secret={client_secret}
+								&scope={scopes}
+							</code>
+						</pre>
+					</section>
+					
+					<section>
+						<h3>Client Credentials Grant - Step2</h3>
+						<p>OAuth server returns back access token</p>
+						<pre>
+							<code class="hljs" data-trim>
+								HTTP/1.1 200 OK
+								Content-Type: application/json
+								Cache-Control: no-store
+								Pragma: no-cache
+	
+								{
+								"access_token":"{access_token}",
+								"token_type":"bearer",
+								"expires_in":3600,
+								"refresh_token":"{refresh_token}",
+								"scope":"{scopes}"
+								}
+							</code>
+						</pre>
+					</section>
+
+				</section>
+
+				<section>
+
+					<section>
+						<h3>Refresh Token Flow</h3>
+						<p>When access token is expired or client application requires another access token for different scopes, then client application calls OAuth token endpoint with refresh token to generate a new access token</p>
+						
+					</section>
+	
+					<section>
+						<h3>Refresh Token Flow</h3>
+						<img class="stretch" src="images/refresh-token-flow.png" />
+					</section>
+	
+				</section>
+
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true }
+				],
+				hash: true,
+				slideNumber: true,
+				progress: true
+			});
+
+			// Shows the slide number using default formatting
+			//Reveal.configure({ slideNumber: true });
+		</script>
+	</body>
+</html>
